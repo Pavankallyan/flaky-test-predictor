@@ -38,6 +38,9 @@ mildly unstable), which is exactly where a human would struggle too.
 │   ├── features.py        # per-test feature engineering
 │   ├── train.py           # train, cross-validate, save model
 │   └── score.py           # rank a new suite by P(flaky)
+├── tests/                 # pytest unit tests for features + scoring
+├── examples/
+│   └── score_walkthrough.py  # score a hand-built 3-test suite end to end
 ├── requirements.txt
 └── README.md
 ```
@@ -51,6 +54,24 @@ python src/generate_data.py   # create data/test_history.csv + data/labels.csv
 python src/train.py           # train + 5-fold CV + save models/flaky_model.pkl
 python src/score.py           # rank tests: python src/score.py [history_csv]
 ```
+
+## Examples
+```bash
+python examples/score_walkthrough.py   # score a hand-built 3-test suite:
+                                       # one stable, one borderline, one
+                                       # wildly flaky — trains the model
+                                       # first if models/flaky_model.pkl
+                                       # does not exist yet
+```
+The walkthrough flags the flaky test at P(flaky) ≈ 0.97 while the stable and
+borderline tests stay below the 0.5 threshold, and explains what to do with
+each verdict (quarantine the flagged ones, watch the borderline ones).
+
+## Tests and CI
+```bash
+python -m pytest tests/ -q   # 20 unit tests for features + scoring
+```
+Every push runs the same suite on GitHub Actions (`.github/workflows/ci.yml`).
 
 ## Design decisions
 - **Why these features:** I chose features a QA engineer would actually look at
